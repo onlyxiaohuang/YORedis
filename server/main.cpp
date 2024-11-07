@@ -14,14 +14,35 @@ int main(){
     //struct sockaddr_in holds an IPv4 address and port. You must initialize the structure as shown in the sample code. 
     sockaddr_in addr = {};
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(8080);
+    //The ntohs() and ntohl() functions convert numbers to the required big endian format. 
+    
+    int port = 8080;
+    addr.sin_port = ntohs(port);
     addr.sin_addr.s_addr = ntohl(0);// wildcard address 0.0.0.0
     int rv = bind(fd,(const sockaddr*)&addr,sizeof(addr));
     if (rv)
     {
         err_handle("bind()");
     }
-    std::cout << "listening on port 8080" << std::endl;
+    std::cout << "listening on port " << port << std::endl;
+
+    //LISTEN FOR CONNECTIONS
+    rv = listen(fd,SOMAXCONN);
+    if (rv){
+        err_handle("listen()");
+    }
+
+    while(true){
+        //ACCEPT CONNECTION
+        sockaddr_in client_addr = {};
+        socklen_t client_addr_len = sizeof(client_addr);
+        int client_fd = accept(fd,(sockaddr*)&client_addr,&client_addr_len);
+        if (client_fd < 0){
+            err_handle("accept()");
+        }
+        std::cout << "accepted connection from " << ntohs(client_addr.sin_addr.s_addr) << ":" << ntohs(client_addr.sin_port) << std::endl;
+
+    }
 
     return 0;
 }
