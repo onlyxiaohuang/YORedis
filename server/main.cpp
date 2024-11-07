@@ -1,6 +1,7 @@
 #pragma once
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include "err.hpp"
 
 int main(){
     //USE IPV4 & TCP
@@ -16,9 +17,11 @@ int main(){
     addr.sin_port = htons(8080);
     addr.sin_addr.s_addr = ntohl(0);// wildcard address 0.0.0.0
     int rv = bind(fd,(const sockaddr*)&addr,sizeof(addr));
-    if (rv < 0)
+    if (rv)
     {
-        panic("bind()");
+        err_handle("bind()");
     }
+    std::cout << "listening on port 8080" << std::endl;
 
+    return 0;
 }
