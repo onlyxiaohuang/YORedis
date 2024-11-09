@@ -1,6 +1,7 @@
 #pragma once
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <unistd.h>
 #include "err.hpp"
 
 int main(){
@@ -45,4 +46,18 @@ int main(){
     }
 
     return 0;
+}
+
+void do_work(int connfd){
+    char rbuf[64] = {};
+    ssize_t n = read(connfd,rbuf,sizeof(rbuf) - 1);
+    if (n < 0){
+        err_handle("read() error");
+        return ;
+    }
+    printf("client says: %s\n",rbuf);
+
+    char wbuf[] = "world";
+    write(connfd, wbuf, strlen(wbuf));
+    return ;
 }
