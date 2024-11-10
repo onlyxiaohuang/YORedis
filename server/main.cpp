@@ -1,8 +1,17 @@
 #pragma once
+
+//WEBSOCKETS
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include "err.hpp"
+
+#include <cstdio>
+#include <iostream>
+#include <cstring>
+
+extern void err_handle(char* err) noexcept;
+void do_work(int connfd);
+
 
 int main(){
     //USE IPV4 & TCP
@@ -42,7 +51,7 @@ int main(){
             err_handle("accept()");
         }
         std::cout << "accepted connection from " << ntohs(client_addr.sin_addr.s_addr) << ":" << ntohs(client_addr.sin_port) << std::endl;
-
+        do_work(client_fd);
     }
 
     return 0;
@@ -55,7 +64,7 @@ void do_work(int connfd){
         err_handle("read() error");
         return ;
     }
-    printf("client says: %s\n",rbuf);
+    std::printf("client says: %s\n",rbuf);
 
     char wbuf[] = "world";
     write(connfd, wbuf, strlen(wbuf));
