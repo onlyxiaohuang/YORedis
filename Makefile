@@ -13,10 +13,11 @@ LDLIBS = -luv -luv_a
 #MAKE UTILS
 utils:
 	$(G++) $(CFLAGS) -c ./utils/err.cpp -o ./output/err.o
+	$(G++) $(CFLAGS) -c ./utils/utils.cpp -o ./output/utils.o
 
 #MAKE SERVER
 server: server.o
-	$(G++) ./output/server.o ./output/err.o -o ./output/server
+	$(G++) ./output/server.o ./output/err.o ./output/utils.o -o ./output/server
 #	$(shell chmod +x ./output/server)
 #	$(shell ./output/server)
 	
@@ -25,7 +26,7 @@ server.o: ./server/main.cpp utils
 
 #MAKE CLIENT
 client: client.o
-	$(G++) ./output/client.o ./output/err.o -o ./output/client
+	$(G++) ./output/client.o ./output/err.o ./output/utils.o -o ./output/client
 #	$(shell chmod +x ./output/client)
 #	$(shell ./output/client)
 
@@ -38,3 +39,6 @@ clean:
 	rm -rf ./output/server.o
 	rm -rf ./output/err.o
 	rm -rf ./output/server
+	rm -rf ./output/client.o
+	rm -rf ./output/client
+	rm -rf ./output/utils.o

@@ -7,7 +7,14 @@
 #include <cstdio>
 #include <cstring>
 
+extern const int k_max_msg;
+extern struct Conn conn;
+
+
 extern void err_handle(char* err) noexcept;
+void try_one_request(Conn *conn){
+    
+}
 
 int main(){
     int fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -26,17 +33,23 @@ int main(){
     if (rv){
         err_handle("connect");
     }
-
-    char msg[] = "hello";
-    write(fd,msg,std::strlen(msg));
     
-    char rbuf[64] = {};
-    ssize_t n = read(fd, rbuf, sizeof(rbuf) - 1);
-    if (n < 0){
-        err_handle("read");
+    // send and recv
+    while(true){
+
+        char msg[] = "hello";
+        write(fd,msg,std::strlen(msg));
+        
+        char rbuf[64] = {};
+        ssize_t n = read(fd, rbuf, sizeof(rbuf) - 1);
+        if (n < 0){
+            err_handle("read");
+            break;
+        }
+
+        std::printf("recv: %s\n", rbuf);
     }
 
-    std::printf("recv: %s\n", rbuf);
     close(fd);
 
 }
