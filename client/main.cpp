@@ -7,15 +7,8 @@
 #include <cstdio>
 #include <cstring>
 
-extern const int k_max_msg;
-extern struct Conn conn;
-
 
 extern void err_handle(char* err) noexcept;
-void try_one_request(Conn *conn){
-    
-}
-
 int main(){
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd < 0)

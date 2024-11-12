@@ -19,4 +19,5 @@ void err_handle(char* err) noexcept
     //std::ios::app 追加写入
     outfile.open(log_dest, std::ios::out | std::ios::trunc | std::ios::app);
     outfile << get_timestamp() << " | Error: " << err << std::endl;
+    abort();
 }
