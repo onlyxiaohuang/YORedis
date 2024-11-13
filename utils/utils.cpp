@@ -112,6 +112,61 @@ static bool try_one_request(Conn *conn){
     if(4 + len > conn -> rbuf_size){
         return false;
     }
-    
 
+    uint32_t rescode = 0;
+    uint32_t wlen = 0;
+    int32_t err = do_request(&conn -> rbuf[4],len,&rescode,&conn -> wbuf[4 + 4],&wlen);
+    
+    if(err){
+        conn -> state = STATE_END;
+        return false;
+    }
+    wlen += 4;
+    memcpy(&conn -> wbuf[0],&wlen,4);
+    memcpy(&conn -> wbuf[4],&rescode,4);
+    conn -> wbuf_size = wlen + 4;
+
+    size_t remain = conn -> rbuf_size - 4;
+    if (remain){
+        memmove(conn -> rbuf, &conn -> rbuf[4 + len], remain);
+    }
+    conn -> rbuf_size = remain;
+
+    conn -> state = STATE_RES;
+    state_res(conn);
+    
+    return (conn -> state == STATE_REQ);
+
+}
+
+static void state_res(Conn *conn) {
+    while (try_flush_buffer(conn)) {}
+}
+
+static bool try_flush_buffer(Conn *conn) {
+    ssize_t rv = 0;
+    do {
+        size_t remain = conn->wbuf_size - conn->wbuf_sent;
+        rv = write(conn->fd, &conn->wbuf[conn->wbuf_sent], remain);
+    } while (rv < 0 && errno == EINTR);
+    if (rv < 0 && errno == EAGAIN) {
+        // got EAGAIN, stop.
+        return false;
+    }
+    if (rv < 0) {
+        msg("write() error");
+        conn->state = STATE_END;
+        return false;
+    }
+    conn->wbuf_sent += (size_t)rv;
+    assert(conn->wbuf_sent <= conn->wbuf_size);
+    if (conn->wbuf_sent == conn->wbuf_size) {
+        // response was fully sent, change state back
+        conn->state = STATE_REQ;
+        conn->wbuf_sent = 0;
+        conn->wbuf_size = 0;
+        return false;
+    }
+    // still got some data in wbuf, could try to write again
+    return true;
 }
