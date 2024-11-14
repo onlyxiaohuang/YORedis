@@ -7,6 +7,17 @@
 #include <map>
 #include <assert.h>
 
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <errno.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/ip.h>
+
+
 extern void err_handle(char* err) noexcept;
 
 const int k_max_args = 20;

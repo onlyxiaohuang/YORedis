@@ -1,7 +1,7 @@
 #include "utils.hpp"
 
 
-
+static void state_res(Conn *conn);
 void msg(const char *msg){
     fprintf(stdout,"%s\n",msg);
 }
@@ -139,10 +139,6 @@ static bool try_one_request(Conn *conn){
 
 }
 
-static void state_res(Conn *conn) {
-    while (try_flush_buffer(conn)) {}
-}
-
 static bool try_flush_buffer(Conn *conn) {
     ssize_t rv = 0;
     do {
@@ -169,4 +165,7 @@ static bool try_flush_buffer(Conn *conn) {
     }
     // still got some data in wbuf, could try to write again
     return true;
+}
+static void state_res(Conn *conn) {
+    while (try_flush_buffer(conn)) {}
 }
