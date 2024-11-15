@@ -33,6 +33,9 @@ client: client.o
 client.o: ./client/main.cpp utils
 	$(G++) $(CFLAGS) -c ./client/main.cpp -o ./output/client.o	
 
+#ALL
+all: utils server client
+
 #CLEAN
 
 clean:

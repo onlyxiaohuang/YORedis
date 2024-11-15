@@ -16,6 +16,8 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/ip.h>
+#include <fcntl.h>
+
 
 
 extern void err_handle(char* err) noexcept;
